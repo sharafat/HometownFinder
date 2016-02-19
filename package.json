@@ -8,6 +8,7 @@
   "dependencies": {
     "react-native": "^0.20.0",
     "react-native-animatable": "^0.5.0",
+    "react-native-facebook-login": "^1.0.3",
     "react-native-maps": "^0.3.0",
     "react-timer-mixin": "^0.13.3"
   }

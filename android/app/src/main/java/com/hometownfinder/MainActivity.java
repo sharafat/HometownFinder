@@ -1,7 +1,8 @@
 package com.hometownfinder;
 
-import com.facebook.react.ReactActivity;
 import com.AirMaps.AirPackage;
+import com.magus.fblogin.FacebookLoginPackage;
+import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 
@@ -36,7 +37,8 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
         new MainReactPackage(),
-        new AirPackage()
+        new AirPackage(),
+        new FacebookLoginPackage()
       );
     }
 }
