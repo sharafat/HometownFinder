@@ -17,31 +17,16 @@ class HometownFinder extends Component {
 
     constructor(props) {
         super(props);
-        this.onMapPress = this.onMapPress.bind(this);
+
+        this.centerMapToUserLocation = this.centerMapToUserLocation.bind(this);
 
         this.state = {
-            markers: []
-        };
-    }
-
-    render() {
-        return (
-            <MapView style={styles.container}
-                     showsUserLocation={true}
-                     onPress={this.onMapPress}>
-                {this.state.markers.map(marker => (
-                    <MapView.Marker
-                        key={marker.key}
-                        coordinate={marker.coordinate}>
-                        <FriendMarker imageUrl={marker.imageUrl}/>
-                    </MapView.Marker>
-                ))}
-            </MapView>
-        );
-    }
-
-    onMapPress(e) {
-        this.setState({
+            mapRegion: {
+                latitude: 23.7793191,
+                longitude: 90.3596064,
+                latitudeDelta: 0,
+                longitudeDelta: 5
+            },
             markers: [
                 {
                     coordinate: {
@@ -60,7 +45,45 @@ class HometownFinder extends Component {
                     imageUrl: "https://graph.facebook.com/334223930063686/picture"
                 }
             ]
-        });
+        };
+
+        this.centerMapToUserLocation();
+    }
+
+    centerMapToUserLocation() {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                this.setState({
+                    mapRegion: {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        latitudeDelta: this.state.mapRegion.latitudeDelta,
+                        longitudeDelta: this.state.mapRegion.longitudeDelta
+                    }
+                });
+            }
+        );
+    }
+
+    render() {
+        return (
+            <MapView style={styles.container}
+                     showsUserLocation={true}
+                     region={this.state.mapRegion}>
+                {this.state.markers.map(marker => (
+                    <MapView.Marker
+                        key={marker.key}
+                        coordinate={marker.coordinate}
+                        onPress={this.onMarkerPress.bind(this, marker.key)}>
+                        <FriendMarker imageUrl={marker.imageUrl}/>
+                    </MapView.Marker>
+                ))}
+            </MapView>
+        );
+    }
+
+    onMarkerPress(markerKey) {
+        console.log(markerKey);
     }
 }
 
