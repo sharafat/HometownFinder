@@ -184,6 +184,8 @@ class HometownMarker extends BaseComponent {
                 longitudeDelta: 1
             }
         });
+
+        this._onMarkerPress(friend.key);
     }
 
     _closeMenu() {
