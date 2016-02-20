@@ -28,7 +28,7 @@ class HometownMarker extends BaseComponent {
     constructor(props) {
         super(props);
 
-        this._bind('render', 'fetchHometownLocations', 'centerMapToUserLocation', 'onMapPress', 'onMarkerPress');
+        this._bind('render', '_fetchHometownLocations', '_centerMapToUserLocation', '_onMapPress', '_onMarkerPress');
 
         var user = this.props.user;
 
@@ -55,11 +55,11 @@ class HometownMarker extends BaseComponent {
             });
         }
 
-        this.fetchHometownLocations();
-        this.centerMapToUserLocation();
+        this._fetchHometownLocations();
+        this._centerMapToUserLocation();
     }
 
-    fetchHometownLocations() {
+    _fetchHometownLocations() {
         var hometownMarkerInstance = this;
 
         for (var i = 0; i < this.state.uninitializedMarkers.length; i++) {
@@ -88,7 +88,7 @@ class HometownMarker extends BaseComponent {
         }
     }
 
-    centerMapToUserLocation() {
+    _centerMapToUserLocation() {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 this.setState({
@@ -109,12 +109,12 @@ class HometownMarker extends BaseComponent {
                 <MapView style={styles.container}
                          showsUserLocation={true}
                          region={this.state.mapRegion}
-                         onPress={this.onMapPress}>
+                         onPress={this._onMapPress}>
                     {this.state.markers.map(marker => (
                         <MapView.Marker key={marker.key}
                                         coordinate={{latitude: marker.hometown.location.latitude,
                                         longitude: marker.hometown.location.longitude}}
-                                        onPress={this.onMarkerPress.bind(this, marker.key)}>
+                                        onPress={this._onMarkerPress.bind(this, marker.key)}>
                             <FriendMarker imageUrl={marker.imageUrl}/>
                         </MapView.Marker>
                     ))}
@@ -127,7 +127,7 @@ class HometownMarker extends BaseComponent {
         );
     }
 
-    onMarkerPress(markerKey) {
+    _onMarkerPress(markerKey) {
         var selectedMarker = this.state.markers[markerKey];
 
         if (this.state.currentlyDisplayedMarker != null) {
@@ -139,7 +139,7 @@ class HometownMarker extends BaseComponent {
         });
     }
 
-    onMapPress() {
+    _onMapPress() {
         if (this.state.currentlyDisplayedMarker != null) {
             this.refs.friendDetails.destroy(() => {
                 this.setState({

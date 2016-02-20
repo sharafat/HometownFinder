@@ -20,7 +20,7 @@ class FacebookLogin extends BaseComponent {
     constructor(props) {
         super(props);
 
-        this._bind('onFacebookLogin', 'navigateToMap');
+        this._bind('_onFacebookLogin', '_navigateToMap');
     }
 
     render() {
@@ -31,7 +31,7 @@ class FacebookLogin extends BaseComponent {
                 </Text>
 
                 <FBLogin permissions={['email', 'user_friends', 'user_hometown']}
-                         onLogin={this.onFacebookLogin}
+                         onLogin={this._onFacebookLogin}
                          onLogout={function(e){console.log(e);}}
                          onError={function(e){console.log(e);alert('Error!');}}
                          onPermissionsMissing={function(e){console.log(e);alert('Error!')}}
@@ -40,7 +40,7 @@ class FacebookLogin extends BaseComponent {
         );
     }
 
-    onFacebookLogin(data) {
+    _onFacebookLogin(data) {
         var user = {
             id: data.profile.id,
             name: data.profile.name,
@@ -81,11 +81,11 @@ class FacebookLogin extends BaseComponent {
                     }
                 }
 
-                facebookLoginObject.navigateToMap(user);
+                facebookLoginObject._navigateToMap(user);
             });
     }
 
-    navigateToMap(user) {
+    _navigateToMap(user) {
         this.props.navigator.push({
             id: 'hometownMarker',
             user: user

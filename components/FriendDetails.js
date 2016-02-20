@@ -21,12 +21,13 @@ import BaseComponent from './BaseComponent';
 
 const FRIEND_DETAILS_COMPONENT_HEIGHT = 110;
 
+
 class FriendDetails extends BaseComponent {
 
     constructor(props) {
         super(props);
 
-        this._bind('render', 'destroy', 'onSendRequest', '_animate');
+        this._bind('render', 'destroy', 'update', '_onSendRequest', '_animate');
 
         this.state = {
             slidingAnimationValue: new Animated.ValueXY({x: 0, y: FRIEND_DETAILS_COMPONENT_HEIGHT}),
@@ -79,7 +80,7 @@ class FriendDetails extends BaseComponent {
                     </View>
                 </View>
 
-                <TouchableOpacity onPress={this.onSendRequest}>
+                <TouchableOpacity onPress={this._onSendRequest}>
                     <View style={styles.sendRequestButton}>
                         <Text style={styles.sendRequestText}
                               ref="sendRequestText">
@@ -91,7 +92,7 @@ class FriendDetails extends BaseComponent {
         );
     }
 
-    onSendRequest() {
+    _onSendRequest() {
         const requestSentLabel = 'Request sent!';
         if (this.state.sendRequestButtonLabel == requestSentLabel) {
             return;
