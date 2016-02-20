@@ -107,4 +107,3 @@ const styles = StyleSheet.create({
 });
 
 module.exports = FacebookLogin;
-AppRegistry.registerComponent('FacebookLogin', () => FacebookLogin);

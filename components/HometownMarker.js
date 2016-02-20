@@ -248,4 +248,3 @@ const styles = StyleSheet.create({
 });
 
 module.exports = HometownMarker;
-AppRegistry.registerComponent('HometownMarker', () => HometownMarker);

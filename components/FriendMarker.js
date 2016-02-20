@@ -10,7 +10,9 @@ import React, {
     Image
     } from 'react-native';
 
-class FriendMarker extends Component {
+import BaseComponent from './BaseComponent';
+
+class FriendMarker extends BaseComponent {
 
     render() {
         return (
@@ -30,4 +32,3 @@ const styles = StyleSheet.create({
 });
 
 module.exports = FriendMarker;
-AppRegistry.registerComponent('FriendMarker', () => FriendMarker);

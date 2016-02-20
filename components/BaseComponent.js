@@ -7,7 +7,7 @@ import React, {
     Component
     } from 'react-native';
 
-class BaseComponent extends React.Component {
+class BaseComponent extends Component {
 
     _bind(...methods) {
         methods.forEach( (method) => this[method] = this[method].bind(this) );
@@ -15,4 +15,3 @@ class BaseComponent extends React.Component {
 }
 
 module.exports = BaseComponent;
-AppRegistry.registerComponent('BaseComponent', () => BaseComponent);
