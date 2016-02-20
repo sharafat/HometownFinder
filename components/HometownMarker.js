@@ -18,10 +18,9 @@ import MapView from 'react-native-maps';
 import Animatable from 'react-native-animatable';
 import TimerMixin from 'react-timer-mixin';
 
-import FriendMarker from './FriendMarker';
 import BaseComponent from './BaseComponent';
-
-var { Dimensions } = require('react-native');
+import FriendMarker from './FriendMarker';
+import FriendDetails from './FriendDetails';
 
 
 class HometownMarker extends BaseComponent {
@@ -29,8 +28,7 @@ class HometownMarker extends BaseComponent {
     constructor(props) {
         super(props);
 
-        this._bind('render', 'fetchHometownLocations', 'centerMapToUserLocation', 'onMapPress', 'onMarkerPress',
-                   'onSendRequest', 'componentWillUnmount');
+        this._bind('render', 'fetchHometownLocations', 'centerMapToUserLocation', 'onMapPress', 'onMarkerPress');
 
         var user = this.props.user;
 
@@ -41,15 +39,13 @@ class HometownMarker extends BaseComponent {
                 latitudeDelta: 0,
                 longitudeDelta: 5
             },
-            slidingAnimationValue: new Animated.ValueXY({x: 0, y: 150}),
-            friendDetailsIsDisplayed: false,
             uninitializedMarkers: user.friends,
             markers: [],
-            currentlyDisplayedMarker: null,
-            sendRequestButtonLabel: 'Send Chill Request'
+            currentlyDisplayedMarker: null
         };
 
         if (user.hometown != null) {
+            // Include logged in user's hometown in marker list
             this.state.uninitializedMarkers.push({
                 id: user.id,
                 name: user.name,
@@ -68,6 +64,7 @@ class HometownMarker extends BaseComponent {
 
         for (var i = 0; i < this.state.uninitializedMarkers.length; i++) {
             var marker = this.state.uninitializedMarkers[i];
+
             fetch('https://graph.facebook.com/v2.5/' + marker.hometown.id + '?fields=location&access_token=' + this.props.user.token)
                 .then(function (response) {
                     return response.json();
@@ -86,7 +83,6 @@ class HometownMarker extends BaseComponent {
 
                             break;
                         }
-
                     }
                 });
         }
@@ -125,32 +121,9 @@ class HometownMarker extends BaseComponent {
                     ))}
                 </MapView>
 
-                <Animatable.View ref="friendDetails"
-                                 style={{transform: this.state.slidingAnimationValue.getTranslateTransform()}}>
-                    <View style={styles.friendDetails}>
-                        <Image style={styles.friendPhoto}
-                               source={this.state.currentlyDisplayedMarker != null ?
-                                    {uri:  this.state.currentlyDisplayedMarker.imageUrl }
-                                    : require('image!empty_pixel')}/>
-                        <View>
-                            <Text style={styles.friendName}>
-                                {this.state.currentlyDisplayedMarker != null ? this.state.currentlyDisplayedMarker.name : ''}
-                            </Text>
-                            <Text style={styles.friendHometown}>
-                                {this.state.currentlyDisplayedMarker != null ? this.state.currentlyDisplayedMarker.hometown.name : ''}
-                            </Text>
-                        </View>
-                    </View>
-
-                    <TouchableOpacity onPress={this.onSendRequest}>
-                        <View style={styles.sendRequestButton}>
-                            <Text style={styles.sendRequestText}
-                                  ref="sendRequestText">
-                                {this.state.sendRequestButtonLabel}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                </Animatable.View>
+                {this.state.currentlyDisplayedMarker != null ?
+                    <FriendDetails ref="friendDetails" marker={this.state.currentlyDisplayedMarker}/>
+                    : null}
             </View>
         );
     }
@@ -159,51 +132,16 @@ class HometownMarker extends BaseComponent {
         this.setState({
             currentlyDisplayedMarker: this.state.markers[markerKey]
         });
-
-        Animated.spring(this.state.slidingAnimationValue, {
-            tension: 0,
-            friction: 4,
-            toValue: {x: 0, y: 0}
-        }).start();
-
-        this.state.friendDetailsIsDisplayed = true;
     }
 
     onMapPress() {
-        if (this.state.friendDetailsIsDisplayed) {
-            Animated.spring(this.state.slidingAnimationValue, {
-                tension: 0,
-                friction: 4,
-                toValue: {x: 0, y: 150}
-            }).start();
-
-            this.state.friendDetailsIsDisplayed = false;
-        }
-    }
-
-    onSendRequest() {
-        const requestSentLabel = 'Request sent!';
-        if (this.state.sendRequestButtonLabel == requestSentLabel) {
-            return;
-        }
-
-        var sendRequestButtonLabel = this.state.sendRequestButtonLabel;
-
-        TimerMixin.setTimeout.call(this, () => {
-            this.setState({
-                sendRequestButtonLabel: requestSentLabel
-            });
-
-            TimerMixin.setTimeout.call(this, () => {
+        if (this.state.currentlyDisplayedMarker != null) {
+            this.refs.friendDetails.destroy(() => {
                 this.setState({
-                    sendRequestButtonLabel: sendRequestButtonLabel
+                    currentlyDisplayedMarker: null
                 });
-            }, 2500);
-        }, 1500);
-    }
-
-    componentWillUnmount() {
-        TimerMixin.componentWillUnmount.call(this);
+            });
+        }
     }
 }
 
@@ -215,35 +153,6 @@ const styles = StyleSheet.create({
         width: 26,
         height: 26,
         borderRadius: 13
-    },
-    friendDetails: {
-        flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
-        padding: 10
-    },
-    friendPhoto: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        marginRight: 10
-    },
-    friendName: {
-        fontSize: 20,
-        color: '#000000'
-    },
-    friendHometown: {
-        fontSize: 14,
-        color: '#A8A8A8'
-    },
-    sendRequestButton: {
-        height: 50,
-        backgroundColor: '#53B1EC',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    sendRequestText: {
-        fontSize: 17,
-        color: '#FFFFFF'
     }
 });
 
