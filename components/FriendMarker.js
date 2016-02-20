@@ -30,3 +30,4 @@ const styles = StyleSheet.create({
 });
 
 module.exports = FriendMarker;
+AppRegistry.registerComponent('FriendMarker', () => FriendMarker);

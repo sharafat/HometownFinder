@@ -13,10 +13,11 @@ import React, {
     Image,
     TouchableOpacity
     } from 'react-native';
+
 import MapView from 'react-native-maps';
 import Animatable from 'react-native-animatable';
 import TimerMixin from 'react-timer-mixin';
-import FriendMarker from './components/FriendMarker';
+import FriendMarker from './FriendMarker';
 
 var { Dimensions } = require('react-native');
 
@@ -25,11 +26,15 @@ class HometownMarker extends Component {
     constructor(props) {
         super(props);
 
+        this.fetchHometownLocations = this.fetchHometownLocations.bind(this);
+        this.render = this.render.bind(this);
         this.centerMapToUserLocation = this.centerMapToUserLocation.bind(this);
         this.onMapPress = this.onMapPress.bind(this);
         this.onMarkerPress = this.onMarkerPress.bind(this);
         this.onSendRequest = this.onSendRequest.bind(this);
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
+
+        var user = this.props.user;
 
         this.state = {
             mapRegion: {
@@ -40,33 +45,53 @@ class HometownMarker extends Component {
             },
             slidingAnimationValue: new Animated.ValueXY({x: 0, y: 150}),
             friendDetailsIsDisplayed: false,
-            markers: [
-                {
-                    coordinate: {
-                        latitude: 23.8302019,
-                        longitude: 89.8343373
-                    },
-                    key: 0,
-                    imageUrl: "https://graph.facebook.com/334223930063686/picture",
-                    name: 'Sharu',
-                    hometown: 'Manikganj'
-                },
-                {
-                    coordinate: {
-                        latitude: 23.5258359,
-                        longitude: 90.3063203
-                    },
-                    key: 1,
-                    imageUrl: "https://graph.facebook.com/334223930063686/picture",
-                    name: 'Sadu',
-                    hometown: 'Munshiganj'
-                }
-            ],
+            uninitializedMarkers: user.friends,
+            markers: [],
             currentlyDisplayedMarker: null,
             sendRequestButtonLabel: 'Send Chill Request'
         };
 
+        if (user.hometown != null) {
+            this.state.uninitializedMarkers.push({
+                id: user.id,
+                name: user.name,
+                key: this.state.uninitializedMarkers.length,
+                imageUrl: 'https://graph.facebook.com/' + user.id + '/picture',
+                hometown: user.hometown
+            });
+        }
+
+        this.fetchHometownLocations();
         this.centerMapToUserLocation();
+    }
+
+    fetchHometownLocations() {
+        var hometownMarkerInstance = this;
+
+        for (var i = 0; i < this.state.uninitializedMarkers.length; i++) {
+            var marker = this.state.uninitializedMarkers[i];
+            fetch('https://graph.facebook.com/v2.5/' + marker.hometown.id + '?fields=location&access_token=' + this.props.user.token)
+                .then(function (response) {
+                    return response.json();
+                }).then(function (data) {
+                    for (var j = 0; j < hometownMarkerInstance.state.uninitializedMarkers.length; j++) {
+                        var marker = hometownMarkerInstance.state.uninitializedMarkers[j];
+                        if (marker.hometown.id == data.id) {
+                            marker.hometown.location = data.location;
+
+                            var markers = hometownMarkerInstance.state.markers;
+                            markers.push(marker);
+
+                            hometownMarkerInstance.setState({
+                                markers: markers
+                            });
+
+                            break;
+                        }
+
+                    }
+                });
+        }
     }
 
     centerMapToUserLocation() {
@@ -94,7 +119,8 @@ class HometownMarker extends Component {
                     {this.state.markers.map(marker => (
                         <MapView.Marker
                             key={marker.key}
-                            coordinate={marker.coordinate}
+                            coordinate={{latitude: marker.hometown.location.latitude,
+                                        longitude: marker.hometown.location.longitude}}
                             onPress={this.onMarkerPress.bind(this, marker.key)}>
                             <FriendMarker imageUrl={marker.imageUrl}/>
                         </MapView.Marker>
@@ -113,7 +139,7 @@ class HometownMarker extends Component {
                                 {this.state.currentlyDisplayedMarker != null ? this.state.currentlyDisplayedMarker.name : ''}
                             </Text>
                             <Text style={styles.friendHometown}>
-                                {this.state.currentlyDisplayedMarker != null ? this.state.currentlyDisplayedMarker.hometown : ''}
+                                {this.state.currentlyDisplayedMarker != null ? this.state.currentlyDisplayedMarker.hometown.name : ''}
                             </Text>
                         </View>
                     </View>
@@ -223,4 +249,5 @@ const styles = StyleSheet.create({
     }
 });
 
+module.exports = HometownMarker;
 AppRegistry.registerComponent('HometownMarker', () => HometownMarker);
