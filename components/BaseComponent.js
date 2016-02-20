@@ -2,10 +2,7 @@
  * Created by sharafat on 2/20/16.
  */
 'use strict';
-import React, {
-    AppRegistry,
-    Component
-    } from 'react-native';
+import React, { Component } from 'react-native';
 
 class BaseComponent extends Component {
 

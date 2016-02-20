@@ -12,6 +12,7 @@ import React, {
 
 import FBLogin from 'react-native-facebook-login';
 
+import FacebookApiService from './FacebookApiService';
 import BaseComponent from './BaseComponent';
 
 
@@ -41,18 +42,21 @@ class FacebookLogin extends BaseComponent {
     }
 
     _onFacebookLogin(data) {
+        FacebookApiService.setUserToken(data.token);
+
         var user = {
             id: data.profile.id,
             name: data.profile.name,
             hometown: null,
-            imageUrl: 'https://graph.facebook.com/' + data.profile.id + '/picture',
+            imageUrl: FacebookApiService.photoUrl(data.profile.id),
             friends: [],
             token: data.token
         };
 
         var facebookLoginObject = this;
 
-        fetch('https://graph.facebook.com/v2.5/me?fields=hometown%2Cfriends%7Bname%2Chometown%7D&access_token=' + user.token)
+        var userDetailsApiUrl = FacebookApiService.apiUrl('me', 'fields=hometown%2Cfriends%7Bname%2Chometown%7D');
+        fetch(userDetailsApiUrl)
             .then(function (response) {
                 return response.json();
             }).then(function (data) {

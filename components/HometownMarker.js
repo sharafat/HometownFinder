@@ -18,6 +18,7 @@ import MapView from 'react-native-maps';
 import Animatable from 'react-native-animatable';
 import TimerMixin from 'react-timer-mixin';
 
+import FacebookApiService from './FacebookApiService';
 import BaseComponent from './BaseComponent';
 import FriendMarker from './FriendMarker';
 import FriendDetails from './FriendDetails';
@@ -53,7 +54,7 @@ class HometownMarker extends BaseComponent {
                 id: user.id,
                 name: user.name,
                 key: this.state.uninitializedMarkers.length,
-                imageUrl: 'https://graph.facebook.com/' + user.id + '/picture',
+                imageUrl: FacebookApiService.photoUrl(user.id),
                 hometown: user.hometown
             });
         }
@@ -68,7 +69,7 @@ class HometownMarker extends BaseComponent {
         for (var i = 0; i < this.state.uninitializedMarkers.length; i++) {
             var marker = this.state.uninitializedMarkers[i];
 
-            fetch('https://graph.facebook.com/v2.5/' + marker.hometown.id + '?fields=location&access_token=' + this.props.user.token)
+            fetch(FacebookApiService.apiUrl(marker.hometown.id, 'fields=location'))
                 .then(function (response) {
                     return response.json();
                 }).then(function (data) {
