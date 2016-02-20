@@ -12,13 +12,15 @@ import React, {
 
 import FBLogin from 'react-native-facebook-login';
 
-class FacebookLogin extends Component {
+import BaseComponent from './BaseComponent';
+
+
+class FacebookLogin extends BaseComponent {
 
     constructor(props) {
         super(props);
 
-        this.onFacebookLogin = this.onFacebookLogin.bind(this);
-        this.navigateToMap = this.navigateToMap.bind(this);
+        this._bind('onFacebookLogin', 'navigateToMap');
     }
 
     render() {

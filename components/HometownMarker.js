@@ -17,22 +17,20 @@ import React, {
 import MapView from 'react-native-maps';
 import Animatable from 'react-native-animatable';
 import TimerMixin from 'react-timer-mixin';
+
 import FriendMarker from './FriendMarker';
+import BaseComponent from './BaseComponent';
 
 var { Dimensions } = require('react-native');
 
-class HometownMarker extends Component {
+
+class HometownMarker extends BaseComponent {
 
     constructor(props) {
         super(props);
 
-        this.fetchHometownLocations = this.fetchHometownLocations.bind(this);
-        this.render = this.render.bind(this);
-        this.centerMapToUserLocation = this.centerMapToUserLocation.bind(this);
-        this.onMapPress = this.onMapPress.bind(this);
-        this.onMarkerPress = this.onMarkerPress.bind(this);
-        this.onSendRequest = this.onSendRequest.bind(this);
-        this.componentWillUnmount = this.componentWillUnmount.bind(this);
+        this._bind('render', 'fetchHometownLocations', 'centerMapToUserLocation', 'onMapPress', 'onMarkerPress',
+                   'onSendRequest', 'componentWillUnmount');
 
         var user = this.props.user;
 

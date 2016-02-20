@@ -5,10 +5,11 @@ import React, {
     Navigator
     } from 'react-native';
 
+import BaseComponent from './components/BaseComponent';
 import FacebookLogin from './components/FacebookLogin';
 import HometownMarker from './components/HometownMarker';
 
-class HometownFinder extends Component {
+class HometownFinder extends BaseComponent {
 
     render() {
         return (
