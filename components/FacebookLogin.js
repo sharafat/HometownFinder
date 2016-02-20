@@ -64,14 +64,14 @@ class FacebookLogin extends BaseComponent {
                 }
 
                 if (data.hasOwnProperty('friends')) {
-                    for (var i = 0; i < data.friends.data; i++) {
+                    for (var i = 0; i < data.friends.data.length; i++) {
                         var friend = data.friends.data[i];
                         if (friend.hasOwnProperty('hometown')) {
                             user.friends.push({
                                 id: friend.id,
                                 name: friend.name,
                                 key: user.friends.length,
-                                imageUrl: 'https://graph.facebook.com/' + data.profile.id + '/picture',
+                                imageUrl: 'https://graph.facebook.com/' + friend.id + '/picture',
                                 hometown: {
                                     id: friend.hometown.id,
                                     name: friend.hometown.name
