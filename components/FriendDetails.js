@@ -56,6 +56,12 @@ class FriendDetails extends BaseComponent {
         });
     }
 
+    update(marker) {
+        this.setState({
+            currentlyDisplayedMarker: marker
+        });
+    }
+
     render() {
         return (
             <Animatable.View ref="friendDetails"

@@ -111,11 +111,10 @@ class HometownMarker extends BaseComponent {
                          region={this.state.mapRegion}
                          onPress={this.onMapPress}>
                     {this.state.markers.map(marker => (
-                        <MapView.Marker
-                            key={marker.key}
-                            coordinate={{latitude: marker.hometown.location.latitude,
+                        <MapView.Marker key={marker.key}
+                                        coordinate={{latitude: marker.hometown.location.latitude,
                                         longitude: marker.hometown.location.longitude}}
-                            onPress={this.onMarkerPress.bind(this, marker.key)}>
+                                        onPress={this.onMarkerPress.bind(this, marker.key)}>
                             <FriendMarker imageUrl={marker.imageUrl}/>
                         </MapView.Marker>
                     ))}
@@ -129,8 +128,14 @@ class HometownMarker extends BaseComponent {
     }
 
     onMarkerPress(markerKey) {
+        var selectedMarker = this.state.markers[markerKey];
+
+        if (this.state.currentlyDisplayedMarker != null) {
+            this.refs.friendDetails.update(selectedMarker);
+        }
+
         this.setState({
-            currentlyDisplayedMarker: this.state.markers[markerKey]
+            currentlyDisplayedMarker: selectedMarker
         });
     }
 
@@ -148,11 +153,6 @@ class HometownMarker extends BaseComponent {
 const styles = StyleSheet.create({
     container: {
         flex: 1
-    },
-    marker: {
-        width: 26,
-        height: 26,
-        borderRadius: 13
     }
 });
 

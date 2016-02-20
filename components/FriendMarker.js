@@ -27,7 +27,8 @@ const styles = StyleSheet.create({
     marker: {
         width: 26,
         height: 26,
-        backgroundColor: '#FF0000'
+        borderRadius: 13,
+        backgroundColor: '#0000FF'
     }
 });
 
