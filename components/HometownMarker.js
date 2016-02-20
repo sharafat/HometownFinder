@@ -21,6 +21,7 @@ import TimerMixin from 'react-timer-mixin';
 import BaseComponent from './BaseComponent';
 import FriendMarker from './FriendMarker';
 import FriendDetails from './FriendDetails';
+import SideMenu from './SideMenu';
 
 
 class HometownMarker extends BaseComponent {
@@ -28,7 +29,8 @@ class HometownMarker extends BaseComponent {
     constructor(props) {
         super(props);
 
-        this._bind('render', '_fetchHometownLocations', '_centerMapToUserLocation', '_onMapPress', '_onMarkerPress');
+        this._bind('render', '_fetchHometownLocations', '_centerMapToUserLocation', '_onMapPress', '_onMarkerPress',
+                   '_onMenuButtonPress', '_onFriendSelected', '_closeMenu', '_openMenu');
 
         var user = this.props.user;
 
@@ -41,7 +43,8 @@ class HometownMarker extends BaseComponent {
             },
             uninitializedMarkers: user.friends,
             markers: [],
-            currentlyDisplayedMarker: null
+            currentlyDisplayedMarker: null,
+            displayMenu: false
         };
 
         if (user.hometown != null) {
@@ -106,6 +109,18 @@ class HometownMarker extends BaseComponent {
     render() {
         return (
             <View style={styles.container}>
+                <View style={styles.header}>
+                    <Text style={styles.headerText}>Hometown Finder</Text>
+                    <TouchableOpacity onPress={this._onMenuButtonPress}>
+                        <Image style={styles.menuIcon}
+                               source={require('../assets/images/ic_menu.png')}/>
+                    </TouchableOpacity>
+                </View>
+
+                {this.state.displayMenu ?
+                    <SideMenu ref="menu" friends={this.props.user.friends} callback={this._onFriendSelected}/>
+                    : null}
+
                 <MapView style={styles.container}
                          showsUserLocation={true}
                          region={this.state.mapRegion}
@@ -148,12 +163,56 @@ class HometownMarker extends BaseComponent {
             });
         }
     }
+
+    _onMenuButtonPress() {
+        if (this.state.displayMenu) {
+            this._closeMenu();
+        } else {
+            this._openMenu();
+        }
+    }
+
+    _onFriendSelected(friend) {
+        this._closeMenu();
+
+        this.setState({
+            mapRegion: {
+                latitude: friend.hometown.location.latitude,
+                longitude: friend.hometown.location.longitude,
+                latitudeDelta: 1,
+                longitudeDelta: 1
+            }
+        });
+    }
+
+    _closeMenu() {
+        this.refs.menu.destroy(() => {
+            this.setState({displayMenu: false});
+        });
+    }
+
+    _openMenu() {
+        this.setState({displayMenu: true});
+    }
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1
-    }
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        padding: 10
+    },
+    headerText: {
+        flex: 1,
+        fontSize: 18,
+        color: '#000000',
+        textAlign: 'center'
+    },
+    menuIcon: {}
 });
 
 module.exports = HometownMarker;
